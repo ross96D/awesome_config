@@ -20,41 +20,33 @@ package.path = package.path .. ';' .. userconfdir .. 'third_party/?.lua;' .. use
 -- Run session and settings daemon
 -------------------------------------------------------------------------------
 -- option a)
-awful_spawn.with_shell("xsettingsd")
+-- awful_spawn.with_shell("xsettingsd")
 --awful_spawn.once("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")
 -- option b)
 --awful_spawn.once("lxsession -a -n -r -s awesome -e LXDE")
 --awful_spawn.once("lxpolkit")
 -- option c)
---awful_spawn.with_shell("gnome-session")
+awful_spawn.with_shell("gnome-session")
 --awful_spawn.with_shell("/usr/lib/gnome-settings-daemon/gnome-settings-daemon")
 
 
 -- Hotkeys help for apps
 -------------------------------------------------------------------------------
 -- Enable all available hotkey help maps
-local hotkeys_module = require("awful.hotkeys_popup.keys")
--- Set custom rules for tmux help
-hotkeys_module.tmux.add_rules_for_terminal({
-  rule_any = {
-    class = { "xst-256color" }
-  }
-})
 -- Load local hotkeys help
 require("hotkeys")
 
-
 -- GLOBAL debug helpers:
 -------------------------------------------------------------------------------
-local debug = require("actionless.util.debug")
-nlog = debug.nlog
-log = debug.log
+-- local debug = require("actionless.util.debug")
+-- nlog = debug.nlog
+-- log = debug.log
 
 
 -- Config state object:
 -------------------------------------------------------------------------------
-local editor = "vim"
-local terminal = "xst"
+local editor = "nvim"
+local terminal = "kitty"
 local context = {
 
   --DEVEL_DYNAMIC_LAYOUTS = true,
@@ -65,16 +57,14 @@ local context = {
   clientbuttons = nil,
   clientkeys = nil,
 
-  theme_dir = awful_util.getdir("config") .. "/themes/lcars-xresources-hidpi/theme.lua",
-  --theme_dir = awful_util.getdir("config") .. "/themes/gtk/theme.lua",
-  --theme_dir = awful_util.getdir("config") .. "/themes/twmish/theme.lua",
+  theme_dir = awful_util.getdir("config") .. "/themes/gtk/theme.lua",
 
   -- @TODO: rename to 'widget_config'
   config = {
     net_preset = 'netctl-auto',
     wlan_if = 'wlp12s0',
     eth_if = 'enp0s25',
-    music_players = { 'spotify', 'clementine' },
+    -- music_players = { 'spotify', 'clementine' },
   },
   -- @TODO: move to 'widget_config'?
   have_battery = true,
@@ -93,23 +83,16 @@ local context = {
   apw_on_the_left = false,
 
   cmds = {
-    terminal          = terminal,
-    terminal_light    = terminal, -- @TODO: add it
+    terminal       = terminal,
+    terminal_light = terminal, -- @TODO: add it
 
-    editor_cmd        = terminal .. " -e " .. editor,
+    editor_cmd     = terminal .. " -e " .. editor,
 
-    compositor        = "killall compton; compton",
+    compositor     = "killall picom; picom", -- is necessary to killall picom?????
 
-    --file_manager = "nautilus",
-    file_manager      = "nemo",
+    -- scrot_preview_cmd = [['mv $f ~/images/ && viewnior ~/images/$f']],
 
-    tmux              = terminal .. " -e bash \\-c tmux",
-    tmux_light        = terminal .. " -e bash \\-c tmux", -- @TODO: add it
-    tmux_run          = terminal .. " -e tmux new-session ",
-
-    scrot_preview_cmd = [['mv $f ~/images/ && viewnior ~/images/$f']],
-
-    system_monitor    = 'gnome-system-monitor',
+    system_monitor = 'gnome-system-monitor',
   },
 
   autorun = {},
@@ -130,23 +113,6 @@ local context = {
 }
 
 
--- Override config from local settings file
--------------------------------------------------------------------------------
-local workstation_settings_result, workstation_settings_details = pcall(function()
-  context = require("config.workstation").init(context) or context
-end)
-if workstation_settings_result ~= true then
-  log("!!!WARNING: ~/.config/awesome/config/workstation.lua not found")
-  print(workstation_settings_details)
-end
-
-local local_settings_result, local_settings_details = pcall(function()
-  context = require("config.local").init(context) or context
-end)
-if local_settings_result ~= true then
-  log("!!!WARNING: ~/.config/awesome/config/local.lua not found")
-  print(local_settings_details)
-end
 -- Make it global for debugging:
 CONFIG_CONTEXT = context
 
@@ -177,6 +143,7 @@ config.widgets.init(context)
 config.toolbar_horizontal.init(context)
 config.keys.init(context)
 config.signals.init(context)
+
 local persistent = require("actionless.persistent")
 if persistent.lcarslist.get() then
   --@TODO: somewhere inside a nasty memory leak is hiding:
@@ -190,5 +157,3 @@ for _, callback in ipairs(context.after_config_loaded) do
 end
 
 -- END
--------------------------------------------------------------------------------
--- vim: set shiftwidth=2:
