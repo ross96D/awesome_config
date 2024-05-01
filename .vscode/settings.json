@@ -1,6 +1,10 @@
 {
     "Lua.diagnostics.globals": [
         "awesome",
-        "jit"
+        "jit",
+        "log",
+        "client",
+        "mouse",
+        "screen"
     ]
 }
