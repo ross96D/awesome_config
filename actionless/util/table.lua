@@ -2,80 +2,79 @@
      Licensed under GNU General Public License v2
 --]]
 
-local a_table = require("awful.util").table
-local unpack    = unpack or table.unpack -- (compatibility with Lua 5.1)
+local a_table       = require("awful.util").table
+---@diagnostic disable-next-line: deprecated
+local unpack        = unpack or table.unpack -- (compatibility with Lua 5.1)
 
 -- helper functions for internal use
 local table_helpers = { unpack = unpack, }
 
 
 function table_helpers.pack(...)
-  return {...}
+  return { ... }
 end
-
 
 function table_helpers.keys(t)
   local keys = {}
-  for k in pairs(t) do keys[#keys+1] = k end
+  for k in pairs(t) do keys[#keys + 1] = k end
   return keys
 end
 
-
 function table_helpers.spairs(t, order)
--- http://stackoverflow.com/a/15706820/1850190
+  -- http://stackoverflow.com/a/15706820/1850190
 
-    -- collect the keys
-    local keys = table_helpers.keys(t)
+  -- collect the keys
+  local keys = table_helpers.keys(t)
 
-    -- if order function given, sort by it by passing the table and keys a, b,
-    -- otherwise just sort the keys
-    if order then
-        table.sort(keys, function(a,b) return order(t, a, b) end)
-    else
-        table.sort(keys)
+  -- if order function given, sort by it by passing the table and keys a, b,
+  -- otherwise just sort the keys
+  if order then
+    table.sort(keys, function(a, b) return order(t, a, b) end)
+  else
+    table.sort(keys)
+  end
+
+  -- return the iterator function
+  local i = 0
+  return function()
+    i = i + 1
+    if keys[i] then
+      return keys[i], t[keys[i]]
     end
-
-    -- return the iterator function
-    local i = 0
-    return function()
-        i = i + 1
-        if keys[i] then
-            return keys[i], t[keys[i]]
-        end
-    end
+  end
 end
 
 function table_helpers.rpairs(t)
--- http://stackoverflow.com/a/15706820/1850190
+  -- http://stackoverflow.com/a/15706820/1850190
 
-    -- collect the keys
-    local keys = table_helpers.keys(t)
+  -- collect the keys
+  local keys = table_helpers.keys(t)
 
-    -- return the iterator function
-    local i = #keys
-    return function()
-        i = i - 1
-        if keys[i] then
-            return keys[i], t[keys[i]]
-        end
+  -- return the iterator function
+  local i = #keys
+  return function()
+    i = i - 1
+    if keys[i] then
+      return keys[i], t[keys[i]]
     end
+  end
 end
 
 function table_helpers.reversed(t)
--- https://gist.github.com/balaam/3122129
-    local reversedTable = {}
-    local itemCount = #t
-    for k, v in ipairs(t) do
-        reversedTable[itemCount + 1 - k] = v
-    end
-    return reversedTable
+  -- https://gist.github.com/balaam/3122129
+  local reversedTable = {}
+  local itemCount = #t
+  for k, v in ipairs(t) do
+    reversedTable[itemCount + 1 - k] = v
+  end
+  return reversedTable
 end
 
 function table_helpers.merge(container, addition)
   container = container or {}
   addition = addition or {}
   for key, value in pairs(addition) do
-      container[key] = value
+    container[key] = value
   end
   return container
 end
@@ -95,7 +94,7 @@ function table_helpers.add(container, addition)
   container = container or {}
   addition = addition or {}
   for _, value in pairs(addition) do
-      table.insert(container, value)
+    table.insert(container, value)
   end
   return container
 end
@@ -111,7 +110,7 @@ end
 function table_helpers.range(original_table, range_start, range_finish)
   range_finish = range_finish or #original_table
   local result = {}
-  for i=range_start,range_finish do
+  for i = range_start, range_finish do
     table.insert(result, original_table[i])
   end
   return result
@@ -165,6 +164,5 @@ function table_helpers.flat(tables)
     end
   )
 end
-
 
 return table_helpers
