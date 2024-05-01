@@ -119,7 +119,7 @@ CONFIG_CONTEXT = context
 
 -- Init default terminal emulator
 -------------------------------------------------------------------------------
-require("menubar.utils").terminal = context.cmds.terminal
+require("actionless.menubar.utils").terminal = context.cmds.terminal
 
 
 -- Init theme
